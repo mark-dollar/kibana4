@@ -11,6 +11,11 @@ define(function (require) {
         return aggResponse.hierarchical(vis, esResponse);
       }
 
+      if (vis.isSankey()) {
+        // the hierarchical converter is very self-contained (woot!)
+        return aggResponse.sankey(vis, esResponse);
+      }
+
       var tableGroup = aggResponse.tabify(vis, esResponse, {
         canSplit: true,
         asAggConfigResults: true

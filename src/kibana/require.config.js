@@ -21,6 +21,7 @@ require.config({
     bower_components: 'bower_components',
     css: 'bower_components/require-css/css',
     d3: 'bower_components/d3/d3',
+    'd3-sankey': 'bower_components/d3-plugins-sankey/sankey',
     elasticsearch: 'bower_components/elasticsearch/elasticsearch.angular',
     faker: 'bower_components/Faker/faker',
     file_saver: 'bower_components/FileSaver/FileSaver',
