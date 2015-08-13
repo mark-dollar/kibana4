@@ -4,9 +4,6 @@ define(function (require) {
     var $ = require('jquery');
 
     var S = require('d3-sankey');
-    var margin = {top: 1, right: 1, bottom: 6, left: 1};
-    var width = 960 - margin.left - margin.right;
-    var height = 500 - margin.top - margin.bottom;
     var formatNumber = d3.format(',.0f');
     var format = function (d) { return formatNumber(d) + ' TWh'; };
     var color = d3.scale.category20();
@@ -53,19 +50,27 @@ define(function (require) {
      */
     SankeyChart.prototype.draw = function () {
       var self = this;
+      var $elem = $(this.chartEl);
+      var margin = this._attr.margin;
+      var elWidth = this._attr.width = $elem.width();
+      var elHeight = this._attr.height = $elem.height();
+      var width;
+      var height;
+      var div;
+      var svg;
 
       return function (selection) {
         selection.each(function (data) {
           var energy = data.slices;
-          var div = d3.select(this);
-          var width = $(this).width();
-          var height = $(this).height();
+          div = d3.select(this);
+          width = elWidth - margin.left - margin.right;
+          height = elHeight - margin.top - margin.bottom;
 
           if (!energy.nodes.length) return;
 
           self._validateContainerSize(width, height);
 
-          var svg = div.append('svg')
+          svg = div.append('svg')
           .attr('width', width)
           .attr('height', height)
           .append('g')
