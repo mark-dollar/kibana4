@@ -71,10 +71,10 @@ define(function (require) {
           self._validateContainerSize(width, height);
 
           svg = div.append('svg')
-          .attr('width', width)
-          .attr('height', height)
+          .attr('width', elWidth)
+          .attr('height', elHeight)
           .append('g')
-          .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+          .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
           var sankey = d3.sankey()
           .nodeWidth(15)
