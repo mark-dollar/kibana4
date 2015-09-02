@@ -6,20 +6,25 @@ define(function (require) {
       location: 'Sankey chart response converter'
     });
     var nodes = {};
-    var links = [];
-    var prevNode = -1;
+    var links = {};
+    var lastNode = -1;
 
-    function processEntry(aggConfig, aggData) {
+    function processEntry(aggConfig, aggData, prevNode) {
       _.each(aggData.buckets, function (b) {
         if (isNaN(nodes[b.key])) {
-          nodes[b.key] = prevNode + 1;
+          nodes[b.key] = lastNode + 1;
+          lastNode = _.max(_.values(nodes));
         }
         if (aggConfig._previous) {
-          links.push({'source': prevNode, 'target': nodes[b.key], 'value': b.doc_count});
+          var k = prevNode + 'sankeysplitchar' + nodes[b.key];
+          if (isNaN(links[k])) {
+            links[k] = b.doc_count;
+          } else {
+            links[k] += b.doc_count;
+          }
         }
-        prevNode = nodes[b.key];
         if (aggConfig._next) {
-          processEntry(aggConfig._next, b[aggConfig._next.id]);
+          processEntry(aggConfig._next, b[aggConfig._next.id], nodes[b.key]);
         }
       });
     }
@@ -35,13 +40,16 @@ define(function (require) {
         notify.error('need more than one sub aggs');
       }
 
-      processEntry(firstAgg, aggData);
+      processEntry(firstAgg, aggData, -1);
 
       var invertNodes = _.invert(nodes);
       var chart = {
         'slices': {
           'nodes' : _.map(_.keys(invertNodes), function (k) { return {'name':invertNodes[k]}; }),
-          'links' : links,
+          'links' : _.map(_.keys(links), function (k) {
+            var s = k.split('sankeysplitchar');
+            return {'source': parseInt(s[0]), 'target': parseInt(s[1]), 'value': links[k]};
+          })
         }
       };
 
